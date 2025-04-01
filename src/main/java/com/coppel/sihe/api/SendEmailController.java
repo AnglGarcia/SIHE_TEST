@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.coppel.sihe.constants.Constants;
 import com.coppel.sihe.service.EmailService;
-import com.coppel.sihe.service.EmpleadoService;
 
 import jakarta.mail.MessagingException;
 
@@ -24,9 +23,7 @@ public class SendEmailController {
     @Autowired
     private EmailService emailService;
     
-    @Autowired
-    private EmpleadoService empleadoService;
-
+   
     
     @GetMapping(path = Constants.MAPPING_EMPLEADOS+"/testSendEmail")
     public void sendEmail(){
