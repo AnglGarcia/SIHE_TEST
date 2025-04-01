@@ -2,8 +2,6 @@ package com.coppel.sihe.api;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,12 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.coppel.sihe.api.dto.Mensaje;
 import com.coppel.sihe.constants.Constants;
-import com.coppel.sihe.entity.CentroDevEntity;
 import com.coppel.sihe.entity.SkillLenguaje;
 import com.coppel.sihe.service.SkillLenguajeService;
 import com.coppel.sihe.util.Log;
 
 import io.swagger.annotations.ApiOperation;
+import jakarta.validation.Valid;
 
 @RestController
 @Validated
@@ -38,6 +36,7 @@ public class SkillLenguajeController {
 
 	@Autowired
 	SkillLenguajeService skLengService;
+	Mensaje mensaje;
 	
 	@GetMapping(path = Constants.MAPPING_SKILL_LENG+"/r")
 	public String run() {
@@ -48,10 +47,11 @@ public class SkillLenguajeController {
 	@PostMapping(path = Constants.MAPPING_SKILL_LENG+"/addskilleng",
 				 produces = MediaType.APPLICATION_JSON_VALUE,
 				 consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity createSkLeng(@RequestBody @Valid SkillLenguaje request) {
+	public ResponseEntity<?> createSkLeng(@RequestBody @Valid SkillLenguaje request) {
 		skLengService.createSkillLenguaje(request);
 		Log.log("Habilidad por lenguaje y empleado creada.");
-		return new ResponseEntity(new Mensaje("Habilidad asignada al empleado"), HttpStatus.OK);
+		mensaje.setMensaje("Habilidad asignada al empleado");
+		return new ResponseEntity<Mensaje>(mensaje, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value="Obtener Skill por Lenguaje-empleado ID", notes="Permite obtener skill por lenguaje y empleado mediante ID")
@@ -90,7 +90,7 @@ public class SkillLenguajeController {
 	public ResponseEntity<?> deleteSkillLeng( @Valid @PathVariable(value = "id") Long skLengId ) {
 		skLengService.borrarSkillLenguaje(skLengId);
 		Log.log("Habilidad por lenguaje y empleado con Id " + skLengId + " eliminada.");
-		return new ResponseEntity(new Mensaje("Habilidad eliminada"), HttpStatus.OK);
+		return new ResponseEntity<>(new Mensaje("Habilidad eliminada"), HttpStatus.OK);
 	}
 	
 	@ApiOperation(value="Actualizar status de la habilidad en lenguaje por ID", notes="Permite actualizar el status de la habilidad en un lenguaje por empleado mediante el ID")
@@ -98,7 +98,7 @@ public class SkillLenguajeController {
 	public ResponseEntity<?> actualizaIsEnabled(@Valid @PathVariable(value="id") Long id, @PathVariable(value="activo") Boolean activo){
 		skLengService.actualizaStatus(id, activo);
 		Log.log("Estatus de habilidad por lenguaje y empleado con Id " + id + " actualizado.");
-		return new ResponseEntity(new Mensaje("Estatus actualizado"), HttpStatus.OK);	
+		return new ResponseEntity<>(new Mensaje("Estatus actualizado"), HttpStatus.OK);	
 	}
 	
 	

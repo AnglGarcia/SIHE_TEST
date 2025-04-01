@@ -3,7 +3,7 @@ package com.coppel.sihe.api;
 import java.security.MessageDigest;
 import java.util.List;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -39,7 +39,8 @@ import io.swagger.annotations.ApiOperation;
 public class EmpleadoController {
 	
 	@Autowired
-	private EmpleadoService empleadoService;  
+	private EmpleadoService empleadoService; 
+	Mensaje mensaje;
 	
 	@ApiOperation(value="Obtener empleados", notes="Permite obtener un listado de los empleados")
 	@GetMapping(path = Constants.MAPPING_EMPLEADOS+"/empleados")
@@ -98,11 +99,12 @@ public class EmpleadoController {
 		}
 		if (empleadoService.existsById(empleado.getId())) {
 			Log.log("Numero de empleado ya existente.");
-            return new ResponseEntity(new Mensaje("El Número de empleado ya existe"), HttpStatus.NOT_FOUND);
+			mensaje.setMensaje("El Número de empleado ya existe");
+            return new ResponseEntity<Mensaje>(mensaje, HttpStatus.NOT_FOUND);
 		}
 			Log.log("Creando empleado con Id " + empleado.getId());
 			empleadoService.createEmpleado(empleado);
-			return new ResponseEntity(new Mensaje("Empleado creado"), HttpStatus.OK);
+			return new ResponseEntity<Mensaje>(new Mensaje("Empleado creado"), HttpStatus.OK);
 	}
 	
 	@ApiOperation(value="Actualizar empleado", notes="Permite realizar la actualización de un empleado mediante el ID")
@@ -121,7 +123,7 @@ public class EmpleadoController {
 	public ResponseEntity<?> deleteEmpleadoById( @Valid @PathVariable(value = "id") Long id ) {
 		Log.log("Eliminando empleado con Id " + id);
 		empleadoService.borrarEmpleado(id);
-		return new ResponseEntity(new Mensaje("Empleado eliminado"), HttpStatus.OK);
+		return new ResponseEntity<Mensaje>(new Mensaje("Empleado eliminado"), HttpStatus.OK);
 	}
 	
 	@ApiOperation(value="Actualizar status del empleado por ID", notes="Permite actualizar el status del empleado mediante el ID")
@@ -129,7 +131,7 @@ public class EmpleadoController {
 	public ResponseEntity<?> actualizaIsEnabled(@Valid @PathVariable(value="id") Long id, @PathVariable(value="activo") Boolean activo){
 		Log.log("Actualizando estatus del empleado con Id " + id);
 		empleadoService.actualizaStatus(id, activo);
-		return new ResponseEntity(new Mensaje("Estatus actualizado"), HttpStatus.OK);	
+		return new ResponseEntity<Mensaje>(new Mensaje("Estatus actualizado"), HttpStatus.OK);	
 	}
 	
 	@GetMapping({"/","/login"})

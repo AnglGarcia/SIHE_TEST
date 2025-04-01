@@ -29,7 +29,6 @@ public class Log {
 		DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 		DateFormat fechaFormat = new SimpleDateFormat("YYYY/MM/dd");
 		DateFormat fechaFormat2 = new SimpleDateFormat("YYYY-MM-dd");
-		DateFormat diaFormat = new SimpleDateFormat("dd");
 		
 		try {
 			String ruta = getFolder_log() + "SIHE_" + fechaFormat2.format(dias)

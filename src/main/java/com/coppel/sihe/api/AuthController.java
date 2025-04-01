@@ -8,7 +8,7 @@ import java.util.Map;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
-import javax.mail.MessagingException;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,6 +35,7 @@ import com.coppel.sihe.util.Cifrado;
 import com.coppel.sihe.util.Log;
 
 import io.swagger.annotations.ApiOperation;
+import jakarta.mail.*;
 
 
 
@@ -105,7 +106,6 @@ public class AuthController {
                      emailParams.put("userName", empAux.getPrimerNombre() + " "+empAux.getApellidoPaterno());
                      emailParams.put("mailUser", empAux.getCorreo());
                      emailParams.put("solicDate", new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(Calendar.getInstance().getTime()));
-                     
     				emailService.sendEmailTemplate(request.getCorreo(), Constants.EMAIL_RESET_PASSWORD_SUBJECT, Constants.EMAIL_RESET_PASSWORD_TEMPLATE, emailParams);
     			} catch (MessagingException | IOException | EmpleadoNotFoundException e) {
     				e.printStackTrace();

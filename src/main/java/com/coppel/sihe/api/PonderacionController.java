@@ -1,9 +1,5 @@
 package com.coppel.sihe.api;
 
-import java.util.List;
-
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,12 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.coppel.sihe.api.dto.Mensaje;
 import com.coppel.sihe.constants.Constants;
-import com.coppel.sihe.entity.CentroDevEntity;
 import com.coppel.sihe.entity.Ponderacion;
 import com.coppel.sihe.service.PonderacionService;
 import com.coppel.sihe.util.Log;
 
 import io.swagger.annotations.ApiOperation;
+import jakarta.validation.Valid;
 
 @RestController
 @Validated
