@@ -1,5 +1,4 @@
 package com.coppel.sihe.api;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +22,7 @@ import com.coppel.sihe.entity.CentroDevEntity;
 import com.coppel.sihe.service.CentrosDevService;
 
 import io.swagger.annotations.ApiOperation;
+import jakarta.validation.Valid;
 
 
 @RestController

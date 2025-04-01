@@ -3,8 +3,7 @@ package com.coppel.sihe.service;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 /**
  * Created by Alan Castro/Angel Garcia on 20/10/2023.
