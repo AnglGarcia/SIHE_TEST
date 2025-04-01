@@ -4,11 +4,6 @@ package com.coppel.sihe.config.filter;
 
 import java.io.IOException;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,9 +24,32 @@ public class JwtFilterRequest extends OncePerRequestFilter {
     @Autowired
     private EmpleadoDetailsServiceImpl empServDetaImp;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
-       String authorizationHeader = request.getHeader("Authorization");
+	/*
+	 * @Override protected void doFilterInternal(HttpServletRequest request,
+	 * HttpServletResponse res, FilterChain filterChain) throws ServletException,
+	 * IOException { String authorizationHeader =
+	 * request.getHeader("Authorization"); if (authorizationHeader != null) { String
+	 * username = jwtUtil.extractUsername(authorizationHeader);
+	 * 
+	 * if (username != null &&
+	 * SecurityContextHolder.getContext().getAuthentication() == null) { UserDetails
+	 * userDetails = empServDetaImp.loadUserByUsername(username);
+	 * 
+	 * if (jwtUtil.validateToken(authorizationHeader, userDetails)) {
+	 * UsernamePasswordAuthenticationToken authToken = new
+	 * UsernamePasswordAuthenticationToken(userDetails, null,
+	 * userDetails.getAuthorities()); authToken.setDetails(new
+	 * WebAuthenticationDetailsSource().buildDetails(request));
+	 * SecurityContextHolder.getContext().setAuthentication(authToken); } } }
+	 * 
+	 * filterChain.doFilter(request, res); }
+	 */
+
+	@Override
+	protected void doFilterInternal(jakarta.servlet.http.HttpServletRequest request,
+			jakarta.servlet.http.HttpServletResponse response, jakarta.servlet.FilterChain filterChain)
+			throws jakarta.servlet.ServletException, IOException {
+		String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null) {
             String username = jwtUtil.extractUsername(authorizationHeader);
 
@@ -46,8 +64,10 @@ public class JwtFilterRequest extends OncePerRequestFilter {
             }
         }
 
-        filterChain.doFilter(request, res);
+        filterChain.doFilter(request, response);
     }
+		
+	}
     
     
-}
+

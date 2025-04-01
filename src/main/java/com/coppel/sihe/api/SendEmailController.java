@@ -1,24 +1,17 @@
 package com.coppel.sihe.api;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-
-import jakarta.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.coppel.sihe.constants.Constants;
-import com.coppel.sihe.entity.Empleado;
-import com.coppel.sihe.error.EmpleadoNotFoundException;
 import com.coppel.sihe.service.EmailService;
 import com.coppel.sihe.service.EmpleadoService;
+
+import jakarta.mail.MessagingException;
 
 /**
  * Created by abburi on 6/18/17.
