@@ -2,13 +2,11 @@ package com.coppel.sihe.api;
 
 
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,18 +22,18 @@ import com.coppel.sihe.api.dto.AuthenticationEmailRequest;
 import com.coppel.sihe.api.dto.AuthenticationRequest;
 import com.coppel.sihe.api.dto.AuthenticationResetCorreoResponse;
 import com.coppel.sihe.api.dto.AuthenticationResponse;
-import com.coppel.sihe.config.JWTUtil;
 import com.coppel.sihe.constants.Constants;
 import com.coppel.sihe.entity.Empleado;
 import com.coppel.sihe.error.EmpleadoNotFoundException;
+import com.coppel.sihe.repository.UserRepository;
+import com.coppel.sihe.security.JwtService;
 import com.coppel.sihe.service.EmailService;
-import com.coppel.sihe.service.EmpleadoDetailsServiceImpl;
 import com.coppel.sihe.service.EmpleadoService;
 import com.coppel.sihe.util.Cifrado;
 import com.coppel.sihe.util.Log;
 
 import io.swagger.annotations.ApiOperation;
-import jakarta.mail.*;
+import jakarta.mail.MessagingException;
 
 
 
@@ -44,13 +42,13 @@ import jakarta.mail.*;
 public class AuthController {
 
     @Autowired
-    private EmpleadoDetailsServiceImpl empServDetaImp;
+    private UserRepository empServDetaImp;
     
     @Autowired
 	private EmpleadoService empleadoService; 
 
     @Autowired
-    private JWTUtil jwtUtil;
+    private JwtService jwtService;
     
     
     @Autowired
@@ -63,14 +61,16 @@ public class AuthController {
         	Log.log("Validando inicio de sesión");
         	String jwt = "";
         	if(request.getTipoLogin() == 1) {
-	            UserDetails userDetails = (UserDetails) empServDetaImp.loadUserByUsername(request.getIdEmpleado().toString());
+	            UserDetails userDetails = empServDetaImp.findById(request.getIdEmpleado().toString())
+	            						.orElseThrow(() ->	new EmpleadoNotFoundException("Empleado no disponible"));
 	            if(Cifrado.encriptar(request.getPassword()).equals(userDetails.getPassword())) {
-	            	 jwt = jwtUtil.generateToken(userDetails);
+	            	 jwt = jwtService.getToken(userDetails);
 	            }
             }else if(request.getTipoLogin() == 2) {
-            	UserDetails userDetails = (UserDetails) empServDetaImp.loadUserByEmail(request.getIdEmpleado().toString());
+            	UserDetails userDetails = (UserDetails) empServDetaImp.consultaUsuarioByUserName(request.getIdEmpleado().toString())
+            								.orElseThrow(() ->	new EmpleadoNotFoundException("Empleado no disponible"));
 	            if(Cifrado.encriptar(request.getPassword()).equals(userDetails.getPassword())) {
-	            	 jwt = jwtUtil.generateToken(userDetails);
+	            	 jwt = jwtService.getToken(userDetails);
 	            }
             }
             if(!jwt.isEmpty())
@@ -80,6 +80,8 @@ public class AuthController {
             	
         } catch (BadCredentialsException e) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }catch(EmpleadoNotFoundException e) {
+        	return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
     
@@ -91,8 +93,9 @@ public class AuthController {
     public ResponseEntity<?> resetContrasenia(@RequestBody AuthenticationEmailRequest request) {
         try {
         	String jwt = "";
-            UserDetails userDetails = (UserDetails) empServDetaImp.loadUserByEmail(request.getCorreo());
-            jwt = jwtUtil.generateToken(userDetails);
+            UserDetails userDetails = empServDetaImp.consultaUsuarioByUserName(request.getCorreo()).
+            						orElseThrow(() -> new EmpleadoNotFoundException("Empleado no disponible"));
+            jwt = jwtService.getToken(userDetails);
             
             String url= "";
             url+= request.getPath();
@@ -117,7 +120,10 @@ public class AuthController {
             	return new ResponseEntity<>(HttpStatus.NON_AUTHORITATIVE_INFORMATION);	
         } catch (BadCredentialsException e) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }catch(EmpleadoNotFoundException e) {
+        	return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
+        
     }
     
     @ApiOperation(value="Cambiar contrasenia empleado", notes="Permite cambiar la contrasenia del empleado una vez que se autentico"
@@ -129,11 +135,12 @@ public class AuthController {
 		UserDetails userDetails = null;
 		if (token != null) {
 			try { 
-				username = jwtUtil.extractUsername(token.getToken());
+				username = jwtService.getUsernameFromToken(token.getToken());
 				if (username != null) {
-					userDetails = empServDetaImp.loadUserByUsername(username);
+					userDetails = empServDetaImp.findById(username.toString())
+							.orElseThrow(() -> new EmpleadoNotFoundException("No se encontro el usuario"));
 	            } 
-				if (jwtUtil.validateToken(token.getToken(), userDetails)) {
+				if (jwtService.isTokenValid(token.getToken(), userDetails)) {
 	                flag= true;
 	            }
 
